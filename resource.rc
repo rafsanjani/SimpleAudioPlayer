@@ -1,0 +1,52 @@
+#include "wx/msw/wx.rc"
+aaaaa           ICON        "icons/icon.ico"
+TASKPLAY        ICON        "icons/play.ico"
+TASKPAUSE       ICON        "icons/pause.ico"
+TASKSTOP        ICON        "icons/stop.ico"
+PLAY            RCDATA		"bitmaps/play.png"
+TASKMENUPLAY    RCDATA      "bitmaps/taskmenuplay.png"
+TASKMENUSTOP    RCDATA      "bitmaps/taskmenustop.png"
+TASKMENUPAUSE   RCDATA      "bitmaps/taskmenupause.png"
+TASKMENUCLOSE   RCDATA      "bitmaps/taskmenuclose.png"
+PPLAY           RCDATA		"bitmaps/play.png"
+PLAY_HOVER      RCDATA      "bitmaps/play_hover.png"
+PAUSED          RCDATA      "bitmaps/paused.png"
+PAUSED_HOVER    RCDATA      "bitmaps/paused_hover.png"
+STOP            RCDATA      "bitmaps/stop.png"
+STOP_HOVER      RCDATA      "bitmaps/stop_hover.png"
+NEXT            RCDATA      "bitmaps/next.png"
+NEXT_HOVER      RCDATA      "bitmaps/next_hover.png"
+PREV            RCDATA      "bitmaps/prev.png"
+PREV_HOVER      RCDATA      "bitmaps/prev_hover.png"
+HEADER          RCDATA      "bitmaps/header.png"
+SPLASH          RCDATA      "bitmaps/SPLASH.png"
+SHUFFLEBITMAP   RCDATA      "bitmaps/shuffle.png"
+OFFBITMAP       RCDATA      "bitmaps/off_bitmap.png"
+REPEATBITMAP    RCDATA      "bitmaps/repeat_bitmap.png"//
+
+
+1 VERSIONINFO
+#define VER_FILEVERSION             1,2,0,0
+#define VER_PRODUCTVERSION          1,2,0,3
+
+FILEVERSION VER_FILEVERSION
+PRODUCTVERSION VER_PRODUCTVERSION
+FILETYPE VFT_APP
+{
+ BLOCK "StringFileInfo"
+ {
+  BLOCK "040904E4"
+  {
+   VALUE "ProductName",  "Rafs SIMPLE AUDIO PLAYER\000"
+   VALUE "FileDescription", "Rafs Simple Audio Player\000"
+   VALUE "FileVersion", "1.2\000"
+   VALUE "ProductVersion",  "1.2"
+   VALUE "LegalCopyright", "GPL\000"
+   VALUE "OriginalFilename", "Simple Audio Player.exe\000"
+  }
+ }
+ BLOCK "VarFileInfo"
+ {
+  VALUE "Translation", 1033, 1252
+ }
+}

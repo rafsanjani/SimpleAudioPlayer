@@ -1,0 +1,44 @@
+CHANGELOG
+3/10/2014:  1.  Full directories can now be dropped and added to the playlist.
+            2.  Added Previous functionality (we can now move to next and previous without errors).
+            3.  Added a Tooltip to the media control buttons.
+
+3/12/2014:  1.  Playlist items now rearrange when an item/items is/are deleted(to queue appropriately).
+            2.  Fixed funny behaviour of playlist when an item just above the current playing file is deleted
+            3.  Playlist now rejects unsupported formats. supported are mp3, wma and ogg.
+            4.  Playlist items can now be shuffled during media play.
+            5.  Changed playlist colours from white to something darker.
+
+3/13/2014:  1.  Added Repeat functionality
+            2.  Added a small menu to the playlist
+
+3/14/2014:  1.  Playlist auto-saves when app is closed.
+            2.  Miscellaneous bug fixes (reduced crash instances)
+            3.  Player state is saved automatically when app is closed.
+
+3/20/2013:  1.  created a taskbar icon for the program
+            2.  resource.rc file now contains some additional info about the program in Windows
+
+3/23/2014:  1.  Program now accepts commandline arguments
+            2.  Miscellaneous bug fixes. Many overflow bugs fixed(crash instances reduced drastically)
+
+3/30/2014:  1. Fixed AppCrash when looping a single file in playlist.
+            2. Added bitmaps to the taskbar menu
+
+4/18/2014:  1. Added Tags using TagLib's C++ library
+
+5/1/2014:  ***********************DEVELOPMENT PAUSED*****************
+
+10/15/2014  1. Improved Tag extraction with taglib
+
+10/19/2014  1. Now performs audio decoding with bass
+            2. Fixed error in DoChangeSongPrev() which caused appcrash
+	    3. Song fades out when stopped button is clicked
+
+Todo: 		1. Create a thread for AddToPlaylist method to prevent program from freezing when adding many files (over 500) to the playlist.
+		2. Use wxFileConfig to save settings instead of the registry.
+		3. Incorporate all linux codes into the program and hence, add conditional compilation codes so that the same code
+		 will compile everywhere.
+		4. create MakeFiles for the project.
+		5. Derive a separate class for wxTimer.
+		5. Use a cross-platform library to decode audio (Preferrably libVlc or bass)
