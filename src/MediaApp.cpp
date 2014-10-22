@@ -1,6 +1,7 @@
 #include "MediaApp.h"
 #include "AutoStartUp.h"
 #include "TagReader.h"
+#include "MediaInfo.h"
 
 DECLARE_APP(MyApp)/*makes an object of MyApp available to this class*/
 BEGIN_EVENT_TABLE(MediaFrame, wxFrame)
@@ -25,6 +26,7 @@ BEGIN_EVENT_TABLE(MediaFrame, wxFrame)
     EVT_MENU(wxID_HIDE, MediaFrame::OnHide)
     EVT_MENU(wxID_CLOSE, MediaFrame::OnExit)
     EVT_MENU(wxID_ABOUT, MediaFrame::OnAbout)
+    EVT_MENU(wxID_FILEINFO, MediaFrame::OnInfo)
 
     EVT_TIMER(wxID_TIMER, MediaFrame::Notify)
     EVT_TIMER(wxID_CROSSFADETIMER, MediaFrame::DoCrossFade)
@@ -54,7 +56,13 @@ void MediaFrame::LoadAllGuiControls()
 
     panel->SetBackgroundColour(wxColour("white"));
 	//position an image onto the right side of the panel
-    /*wxStaticBitmap *bmp = */new wxStaticBitmap(panel,wxID_ANY,headerImage, wxPoint(255, 25),wxDefaultSize);
+
+    wxStaticBitmap *bmp = new wxStaticBitmap(panel,91,headerImage, wxPoint(255, 25),wxDefaultSize);
+
+    bmp->Connect(wxEVT_LEFT_UP, wxMouseEventHandler(MediaFrame::OnLeftUp),NULL, this);
+    bmp->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(MediaFrame::OnLeftDown), NULL, this);
+    bmp->Connect(wxEVT_MOTION,  wxMouseEventHandler(MediaFrame::OnMouseMove), NULL, this);
+
 
     menuBar = new wxMenuBar();
     fileMenu = new wxMenu();
@@ -122,7 +130,10 @@ void MediaFrame::LoadAllGuiControls()
     sizer->Add(panel, 1, wxEXPAND | wxALL, 5);
 
 	//for displaying current track's status
-    trackInfo = new wxStaticText(panel,wxID_ANY,"Track info here");
+    trackInfo = new wxStaticText(panel,wxID_INFO,"Track info here");
+    trackInfo->Connect(wxEVT_LEFT_UP, wxID_INFO, wxMouseEventHandler(MediaFrame::OnLeftUp),NULL, this);
+    trackInfo->Connect(wxEVT_LEFT_DOWN, wxID_INFO, wxMouseEventHandler(MediaFrame::OnLeftDown), NULL, this);
+    trackInfo->Connect(wxEVT_MOTION, wxID_INFO, wxMouseEventHandler(MediaFrame::OnMouseMove), NULL, this);
 
     playlist = new MediaPlaylist(this);
 
@@ -851,10 +862,11 @@ void MediaFrame::mediaLoaded()
     wxString currFile = *((wxString*) playlist->GetItemData(LastFileId));
     filePath = currFile;
 
-    TagReader tags(filePath);
-    if(tags.HasTags()){
-        songTitle = tags.GetTitle();
-        songArtist = tags.GetArtist();
+    TagReader *tags = new TagReader(filePath);
+    if(tags->HasTags()){
+        songTitle = tags->GetTitle();
+        songArtist = tags->GetArtist();
+        delete tags;
     }
 
     if(songTitle.length() == 0 or songArtist.length() == 0)
@@ -1006,7 +1018,55 @@ void MediaFrame::DoPlaySong()
     else
        DoOpenFile();
 }
+void MediaFrame::DoShowTrackInfo()
+{
+    wxListItem item;
+    playlist->GetSelectedItem(item);
+	if(item.GetId() != -1)
+	{
+		wxString file, title, artist, album, bitrate, genre, tracksize,
+        year, samplerate, channel, length, comment, extension;
+		file = (*(wxString*)item.GetData());
 
+		wxBitmap art;
+
+		double mb = (wxFileName(file).GetSize().ToDouble()/1024)/1024;
+
+		tracksize << mb;
+		wxString tracksize_n = (wxString::Format("%f", mb)).substr(0, 4);
+
+        TagReader *tag = new TagReader(file);
+
+		if(tag->HasTags()){
+		    title = tag->GetTitle();
+            artist = tag->GetArtist();
+            album = tag->GetAlbum();
+            bitrate = tag->GetBitrate();
+            genre = tag->GetGenre();
+            channel = tag->GetChannel();
+            samplerate = tag->GetSamplerate();
+            year = tag->GetYear();
+            length = tag->GetTime();
+            art = tag->GetAlbumArt();
+
+            //delete tag;
+		}
+
+		MediaInfo *mediaInfoWindow = new MediaInfo(this, wxID_ANY);
+		mediaInfoWindow->SetFilePath(file);
+		mediaInfoWindow->SetAlbum(album);
+		mediaInfoWindow->SetArtist(artist);
+		mediaInfoWindow->SetTitle(title);
+		mediaInfoWindow->SetDuration(length);
+		mediaInfoWindow->SetQuality(samplerate, bitrate, channel);
+		mediaInfoWindow->SetGenre(genre);
+		mediaInfoWindow->SetAlbumArt(art);
+		mediaInfoWindow->SetSize(tracksize_n+" MB");
+
+		mediaInfoWindow->ShowModal();
+	}
+
+}
 
 /*
 when we double click an item in the playlist, or select an item and hit enter,
@@ -1054,6 +1114,10 @@ void MediaFrame::ShowAbout()
     wxYield();
 }
 
+void MediaFrame::OnInfo(wxCommandEvent &event)
+{
+    DoShowTrackInfo();
+}
 void MediaFrame::OnClose(wxCloseEvent &evt)
 {
     DoCloseFrame();
@@ -1206,4 +1270,35 @@ MediaFrame::~MediaFrame()
     }
     BASS_StreamFree(str);
 }
+void MediaFrame::OnLeftDown(wxMouseEvent &event)
+{
+    CaptureMouse();
+    wxPoint pos = this->ClientToScreen(event.GetPosition());
+    wxPoint origin = this->GetPosition();
+    int dx =  pos.x - origin.x;
+    int dy = pos.y - origin.y;
+    m_delta = wxPoint(dx, dy);
+}
+
+void MediaFrame::OnLeftUp(wxMouseEvent &event)
+{
+    if (HasCapture())
+    {
+        ReleaseMouse();
+    }
+}
+//if mouse is moving, we check to see whether the left is down and also whether the user is dragging,
+//if all checks succeed, we get the position of the window in relation to the screen and move the frame
+//accordingly by subtracting the gradient from the new position of the mouse
+void MediaFrame::OnMouseMove(wxMouseEvent &event)
+{
+    wxPoint pt = event.GetPosition();
+    if (event.Dragging() && event.LeftIsDown())
+    {
+        wxPoint pos = this->ClientToScreen(pt);
+        this->Move(wxPoint(pos.x - m_delta.x, pos.y - m_delta.y));
+    }
+}
+
+
 //RAFS

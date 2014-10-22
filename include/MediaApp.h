@@ -44,8 +44,11 @@ class MediaFrame : public wxFrame
     friend void MediaPlaylist::DoPhysicalDelete(bool currentFile);
     friend bool MyApp::OnInit();
 public:
+    void DoShowTrackInfo();
     MediaFrame(wxWindow *parent,const wxString &title, wxPoint pos, wxSize size, long style = wxDEFAULT_FRAME_STYLE);
 
+    bool ProcessAlbumArt();
+    wxBitmap GetAlbumArt();
 private:
     HSTREAM str;
     wxPoint screenPosition;
@@ -104,6 +107,7 @@ private: //just separating functions from objects and variables
     void DoCloseFrame();
     void CrossFade();
     void DoCrossFade(wxTimerEvent &event);
+
     void ShowMainWindow(bool Show = true);
     bool ItemPlayed(int item);
 
@@ -120,7 +124,13 @@ private: //just separating functions from objects and variables
     void OnAutoStart(wxCommandEvent &event);
     void OnHide(wxCommandEvent &event);
     void OnAbout(wxCommandEvent &event);
+    void OnInfo(wxCommandEvent &event);
     void OnExit(wxCommandEvent &event);
+
+    wxPoint m_delta;
+    void OnLeftDown(wxMouseEvent &event);
+    void OnLeftUp(wxMouseEvent &event);
+    void OnMouseMove(wxMouseEvent &event);
 
     /*wxPoint m_delta;
     void OnLeftDown(wxMouseEvent &event);

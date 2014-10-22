@@ -42,9 +42,9 @@ class MediaPlaylist : public wxListCtrl
     void OnRightDown(wxMouseEvent &evt);
     void OnLeftDown(wxMouseEvent &evt);
     void Clear(wxCommandEvent &event);
+    void OnInfo(wxCommandEvent &event);
     void Delete(wxCommandEvent &event);
     void OnPhysicalDelete(wxCommandEvent &event);
-    void OnInfo(wxCommandEvent &event);
     int fileId;
 
    private:

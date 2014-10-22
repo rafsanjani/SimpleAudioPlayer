@@ -36,7 +36,7 @@ CHANGELOG
 	    3. Song fades out when stopped button is clicked
 
 Todo: 		1. Create a thread for AddToPlaylist method to prevent program from freezing when adding many files (over 500) to the playlist.
-		2. Use wxFileConfig to save settings instead of the registry.
+		2. Use wxFileConfig to save settings instead of the registry (for speed).
 		3. Incorporate all linux codes into the program and hence, add conditional compilation codes so that the same code
 		 will compile everywhere.
 		4. create MakeFiles for the project.

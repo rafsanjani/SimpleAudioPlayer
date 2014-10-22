@@ -21,9 +21,12 @@ PREV_HOVER      RCDATA      "bitmaps/prev_hover.png"
 HEADER          RCDATA      "bitmaps/header.png"
 SPLASH          RCDATA      "bitmaps/SPLASH.png"
 SHUFFLEBITMAP   RCDATA      "bitmaps/shuffle.png"
-OFFBITMAP       RCDATA      "bitmaps/off_bitmap.png"
-REPEATBITMAP    RCDATA      "bitmaps/repeat_bitmap.png"//
+//OFFBITMAP       RCDATA      "bitmaps/off_bitmap.png"
+REPEATBITMAP    RCDATA      "bitmaps/repeat_bitmap.png"
 
+
+ALBUMART        RCDATA      "image.png"
+HEADER2          RCDATA      "TAGIMAGE.png"
 
 1 VERSIONINFO
 #define VER_FILEVERSION             1,2,0,0

@@ -21,33 +21,51 @@
 */
 #include <wx/wx.h>
 #include <tag.h>
+#include <id3v2tag.h>
+#include <mpegfile.h>
+#include <id3v2frame.h>
+#include <id3v2header.h>
+#include <attachedpictureframe.h>
+#include <iostream>
+#include <fstream>
+#include <string>
+
+using std::ios;
+using std::fstream;
+using std::ofstream;
 #include <fileref.h>
 //using namespace TagLib;
 
 class TagReader
 {
     public:
-        TagReader(const wxString &file);
+        TagReader(wxString file);
 
         bool HasTags();
+        void Free();
         wxString GetTitle() ;
         wxString GetArtist();
         wxString GetTime();
         wxString GetYear();
         wxString GetGenre();
         wxString GetComment();
+        wxString GetChannel();
         wxString GetAlbum();
         wxString GetBitrate();
         wxString GetSamplerate();
+        wxBitmap GetAlbumArt();
         ~TagReader();
 
     private:
+        bool ProcessAlbumArt();
         bool tagsFound;
         TagLib::FileRef *myFile;
         TagLib::Tag *tag;
+        TagLib::ID3v2::Tag *id3v2;
         TagLib::AudioProperties *audioProperties;
 
-        wxString title, artist, time, year, genre, comment, album, bitrate, samplerate;
+        wxString file, title, artist, time, year,
+        channel, genre, comment, album, bitrate, samplerate;
 
         wxString ToWxString(TagLib::String file);
         TagLib::String FormatSeconds(int seconds);

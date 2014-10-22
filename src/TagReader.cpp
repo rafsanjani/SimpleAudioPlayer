@@ -1,20 +1,27 @@
 #include "TagReader.h"
+#include <iostream>
+#include "fstream"
 
-TagReader::TagReader(const wxString &file)
+using std::ios;
+using std::fstream;
+
+TagReader::TagReader(wxString inFile)
 {
-    myFile = new TagLib::FileRef(file.t_str());
+    //wxInitAllImageHandlers();
+    file = inFile;
+    myFile = new TagLib::FileRef(inFile.t_str());
 
     if(HasTags())
     {
         tag = myFile->tag();
         audioProperties = myFile->audioProperties();
     }
+
 }
 
 bool TagReader::HasTags()
 {
     tagsFound = (!myFile->isNull() && myFile->tag());
-
     return tagsFound;
 }
 
@@ -29,10 +36,17 @@ wxString TagReader::GetArtist()
     artist = tagsFound ? ToWxString(tag->artist()) :  " ";
     return artist;
 }
+
 wxString TagReader::GetBitrate()
 {
-    bitrate = tagsFound ? wxString::Format("%d", audioProperties->bitrate()) : " ";
+    bitrate = tagsFound ? wxString::Format("%dkbps", audioProperties->bitrate()) : " ";
     return bitrate;
+}
+
+wxString TagReader::GetChannel()
+{
+    channel = tagsFound ? wxString::Format("%d", audioProperties->channels()) : " ";
+    return channel;
 }
 wxString TagReader::GetComment()
 {
@@ -47,7 +61,7 @@ wxString TagReader::GetGenre()
 
 wxString TagReader::GetSamplerate()
 {
-    samplerate = tagsFound ? wxString::Format("%d,", audioProperties->sampleRate()) : " ";
+    samplerate = tagsFound ? wxString::Format("%dHz", audioProperties->sampleRate()) : " ";
     return samplerate;
 }
 
@@ -87,6 +101,70 @@ TagLib::String TagReader::FormatSeconds(int seconds)
     char secondsString[3];
     sprintf(secondsString, "%02i", seconds);
     return secondsString;
+}
+
+//obtained from:
+//http://rajeevandlinux.wordpress.com/2012/04/24/extract-album-art-from-mp3-files-using-taglib-in-c/
+bool TagReader::ProcessAlbumArt()
+{
+  delete myFile;
+  const char *IdPicture = "APIC";
+
+  TagLib::MPEG::File mpegFile(file.t_str());
+  TagLib::ID3v2::Tag *id3v2tag = mpegFile.ID3v2Tag();
+  TagLib::ID3v2::FrameList Frame ;
+  TagLib::ID3v2::AttachedPictureFrame *PicFrame ;
+  char *SrcImage ;
+  unsigned long Size ;
+
+  if ( id3v2tag )
+  {
+    std::fstream outFile("AlbumArt.png", ios::out | ios::binary);
+    Frame = id3v2tag->frameListMap()[IdPicture] ;
+    if (!Frame.isEmpty() )
+    {
+      for(TagLib::ID3v2::FrameList::ConstIterator it = Frame.begin(); it != Frame.end(); ++it)
+      {
+        PicFrame = (TagLib::ID3v2::AttachedPictureFrame *)(*it) ;
+        {
+          Size = PicFrame->picture().size() ;
+
+          SrcImage = new char[Size];
+
+          if ( SrcImage )
+          {
+            memcpy ( SrcImage, PicFrame->picture().data(), Size ) ;
+
+            outFile.write(SrcImage, Size);
+
+            outFile.close();
+            delete SrcImage;
+            return true;
+          }
+
+        }
+      }
+    }
+  }
+     return false;
+}
+wxBitmap TagReader::GetAlbumArt()
+{
+    wxBitmap bmp;
+
+    if(ProcessAlbumArt()){
+        bmp = wxBitmap( wxT("AlbumArt.png"), wxBITMAP_TYPE_ANY);
+        return bmp;
+    }
+    else
+        bmp = wxBitmap( wxT("NoAlbumArt.png"), wxBITMAP_TYPE_ANY);
+
+    return bmp;
+}
+
+void TagReader::Free()
+{
+     //delete myFile;
 }
 
 TagReader::~TagReader()

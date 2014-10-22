@@ -111,37 +111,7 @@ void MediaPlaylist::AddToPlayList(const wxString& szString)
 
 void MediaPlaylist::OnInfo(wxCommandEvent &event)
 {
-    wxListItem item;
-    GetSelectedItem(item);
-	if(item.GetId() != -1)
-	{
-		wxString file, title, artist, album, bitrate, genre, tracksize, year, samplerate, length, comment;
-		file = (*(wxString*)item.GetData());
-
-
-		double mb = (wxFileName(file).GetSize().ToDouble()/1024)/1024;
-
-		tracksize = wxString::Format("%f", mb);
-		wxString tracksize_n = (wxString::Format("%f", mb)).substr(0, 3);
-
-
-		TagReader *tag = new TagReader(file);
-		if(tag->HasTags()){
-		    title = tag->GetTitle();
-            artist = tag->GetArtist();
-            album = tag->GetAlbum();
-            bitrate = tag->GetBitrate();
-            genre = tag->GetGenre();
-            samplerate = tag->GetSamplerate();
-            year = tag->GetYear();
-
-
-            wxMessageBox("Title - "+title+"\nAuthor - "+artist+"\nAlbum - "+album+"\nBitrate - "+bitrate+"kbps"+
-                         "\nGenre - "+genre+"\nSize - "+tracksize_n+"MB\nLength - "+length+"\nSample Rate - "+samplerate+
-                         "\nYear - "+year+"\nFile - "+file, "Track Info ", wxOK);
-            delete tag;
-		}
-	}
+    ((MediaFrame *)parent)->DoShowTrackInfo();
 
 }
 
